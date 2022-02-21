@@ -3,6 +3,7 @@ from flask import g
 
 DATABASE_URI = 'database.db'
 
+
 def get_db():
     db = getattr(g, 'db', None)
     if db is None:
@@ -30,7 +31,20 @@ def create_user(email, password, firstname, familyname, gender, city, country):
 
 def find_user(email, password):
 
-    cursor = get_db().execute("select * from user where user.email = ? ", [email])
+    cursor = get_db().execute("select * from user where user.email = ? and password = ?", [email, password])
     rows = cursor.fetchall()
     cursor.close()
-    return rows
+    print(rows)
+    if rows:
+        return True
+    else:
+        return False
+
+def new_password(token, password, newpassword):
+
+    try:
+        get_db().execute("update user set password = ? where password = ?", [newpassword,password])
+        get_db().commit()
+        return True
+    except:
+        return False
