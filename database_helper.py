@@ -40,6 +40,8 @@ def find_user(email, password):
     else:
         return False
 
+
+
 def new_password(token, password, newpassword):
 
     try:
@@ -48,3 +50,5 @@ def new_password(token, password, newpassword):
         return True
     except:
         return False
+
+#post message to do with alter table, insert a new row for each message
