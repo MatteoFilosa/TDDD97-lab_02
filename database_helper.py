@@ -51,4 +51,17 @@ def new_password(token, password, newpassword):
     except:
         return False
 
-#post message to do with alter table, insert a new row for each message
+
+
+def message_help(token, message, email):
+
+    cursor = get_db().execute("select * from user where user.email = ?", [email])
+    rows = cursor.fetchall()
+    cursor.close()
+    if rows: #user exists
+        get_db().execute("insert into messages values(?, ?)", [message, email])
+        get_db().commit()
+        print(message)
+        return True
+    else:
+        return False
