@@ -61,13 +61,13 @@ def sign_out():
         if json['token']==tokenDic['token'] and tokenDic['email']!="":
             tokenDic['token'] = ""
             tokenDic['email'] = ""
-            return "{}", 201
+            return "{}", 200
         else:
             return "{}", 400
     else:
         return "{}", 400
 
-@app.route('/user/changepassword', methods = ['POST'])
+@app.route('/user/changepassword', methods = ['PUT'])
 def change_password():
 
     json = request.get_json()
@@ -83,7 +83,7 @@ def change_password():
     else:
         return "{}", 400
 
-@app.route('/user/postmessage', methods = ['POST'])
+@app.route('/user/postmessage', methods = ['PUT'])
 def post_message():
 
     json = request.get_json()
@@ -105,9 +105,12 @@ def get_user_data_by_token():
     json = request.headers.get("token")
     print(json)
     if json==tokenDic['token']:
-        result = database_helper.retrieve_data_token(json)
-        if result != False:
-            return {"result" : result}, 200
+        rows = database_helper.retrieve_data_token(json)
+        if rows != False:
+            result = []
+            for row in rows:
+                result.append({"email": row[0], "firstname" : row[1], "lastname" : row[2], "gender" : row[3], "city" : row[4], "country" : row[5]})
+            return jsonify(result), 200
         else:
             return "{}", 500
     else:
@@ -119,9 +122,12 @@ def get_user_data_by_email():
     jsonToken = request.headers.get("token")
     jsonEmail = request.get_json()
     if jsonToken==tokenDic['token'] and "email" in jsonEmail and len(jsonEmail) < 30:
-        result = database_helper.retrieve_data_email(jsonToken, jsonEmail['email'])
-        if result != False:
-            return {"result" : result}, 200
+        rows = database_helper.retrieve_data_email(jsonToken, jsonEmail['email'])
+        if rows != False:
+            result = []
+            for row in rows:
+                result.append({"email": row[0], "firstname" : row[1], "lastname" : row[2], "gender" : row[3], "city" : row[4], "country" : row[5]})
+            return jsonify(result), 200
         else:
             return "{}", 500
     else:
@@ -134,7 +140,7 @@ def get_user_messages_by_token():
     if json==tokenDic['token']:
         result = database_helper.retrieve_messages_token(json)
         if result != False:
-            return {"result" : result}, 200
+            return jsonify({"result" : result}), 200
         else:
             return "{}", 500
     else:
@@ -148,7 +154,7 @@ def get_user_messages_by_email():
     if jsonToken==tokenDic['token'] and "email" in jsonEmail and len(jsonEmail) < 30:
         result = database_helper.retrieve_messages_email(jsonToken, jsonEmail['email'])
         if result != False:
-            return {"result" : result}, 200
+            return jsonify({"result" : result}), 200
         else:
             return "{}", 500
     else:
