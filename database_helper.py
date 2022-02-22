@@ -3,6 +3,17 @@ from flask import g
 
 DATABASE_URI = 'database.db'
 
+loggedInUser = {
+    "token": "",
+    "email": ""
+ }
+
+def token_to_email(token):
+    return loggedInUser["email"]
+
+def send_token(token):
+    loggedInUser["token"] = token
+
 
 def get_db():
     db = getattr(g, 'db', None)
@@ -31,6 +42,7 @@ def create_user(email, password, firstname, familyname, gender, city, country):
 
 def find_user(email, password):
 
+    loggedInUser["email"] = email
     cursor = get_db().execute("select * from user where user.email = ? and password = ?", [email, password])
     rows = cursor.fetchall()
     cursor.close()
@@ -63,5 +75,52 @@ def message_help(token, message, email):
         get_db().commit()
         print(message)
         return True
+    else:
+        return False
+
+def retrieve_data_token(token):
+
+    email = token_to_email(token)
+    cursor = get_db().execute("select email, firstname, firstname, gender, city, country from user where user.email = ?", [email])
+    rows = cursor.fetchall()
+    cursor.close()
+    print(rows)
+    if rows:
+        return rows
+    else:
+        return False
+
+def retrieve_data_email(token, email):
+
+    cursor = get_db().execute("select email, firstname, firstname, gender, city, country from user where user.email = ?", [email])
+    rows = cursor.fetchall()
+    cursor.close()
+    print(rows)
+    if rows:
+        return rows
+    else:
+        return False
+
+def retrieve_messages_token(token):
+
+    email = token_to_email(token)
+    cursor = get_db().execute("select message from messages where email = ?", [email])
+    rows = cursor.fetchall()
+    cursor.close()
+    print(rows)
+    if rows:
+        return rows
+    else:
+        return False
+
+def retrieve_messages_email(token, email):
+
+
+    cursor = get_db().execute("select message from messages where email = ?", [email])
+    rows = cursor.fetchall()
+    cursor.close()
+    print(rows)
+    if rows:
+        return rows
     else:
         return False
