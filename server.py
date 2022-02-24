@@ -16,7 +16,7 @@ tokenDic = {
 def after_request(exception):
     database_helper.disconnect_db()
 
-@app.route('/user/signup', methods = ['PUT'])
+@app.route('/user/signup', methods = ['POST'])
 def sign_up():
     json = request.get_json()
     if "email" in json and "password" in json and "firstname" in json and "familyname" in json and "gender" in json and "city" in json and "country" in json:
@@ -25,7 +25,7 @@ def sign_up():
             if result == True:
                 return "{}", 201
             else:
-                return "{}", 500
+                return "{}", 409
         else:
             return "{}", 400
     else:
@@ -56,16 +56,15 @@ def sign_in():
 @app.route('/user/signout', methods = ['POST'])
 def sign_out():
 
-    json = request.get_json()
-    if "token" in json:
-        if json['token']==tokenDic['token'] and tokenDic['email']!="":
-            tokenDic['token'] = ""
-            tokenDic['email'] = ""
-            return "{}", 200
-        else:
-            return "{}", 400
+#header token
+    json = request.headers.get("token")
+    if json==tokenDic['token'] and tokenDic['email']!="":
+        tokenDic['token'] = ""
+        tokenDic['email'] = ""
+        return "{}", 200
     else:
         return "{}", 400
+
 
 @app.route('/user/changepassword', methods = ['PUT'])
 def change_password():

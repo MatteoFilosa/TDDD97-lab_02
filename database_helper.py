@@ -35,7 +35,8 @@ def create_user(email, password, firstname, familyname, gender, city, country):
 
         get_db().commit()
         return True
-    except:
+    except:  #FIX Exception
+        
         return False
 
 
