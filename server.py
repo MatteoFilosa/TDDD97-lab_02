@@ -17,6 +17,7 @@ def after_request(exception):
     database_helper.disconnect_db()
 
 @app.route('/user/signup', methods = ['POST'])
+#this function signs up the user, using a function from the database_helper.
 def sign_up():
     json = request.get_json()
     if "email" in json and "password" in json and "firstname" in json and "familyname" in json and "gender" in json and "city" in json and "country" in json:
@@ -32,6 +33,7 @@ def sign_up():
         return "{}", 400
 
 @app.route('/user/signin', methods = ['POST'])
+#this function signs in the user, using a function from the database_helper and returning a random token.
 def sign_in():
     json = request.get_json()
     if "email" in json and "password" in json:
@@ -55,7 +57,8 @@ def sign_in():
 
 @app.route('/user/signout', methods = ['POST'])
 def sign_out():
-#header token
+#this function signs out the user and deletes the token for this session.
+
     json = request.headers.get("token")
     if json==tokenDic['token'] and tokenDic['email']!="":
         tokenDic['token'] = ""
@@ -66,6 +69,7 @@ def sign_out():
 
 
 @app.route('/user/changepassword', methods = ['PUT'])
+#function to change the password
 def change_password():
     json = request.get_json()
     if "token" in json and "password" in json and "newpassword" in json:
@@ -83,6 +87,7 @@ def change_password():
 
 @app.route('/user/postmessage', methods = ['PUT'])
 def post_message():
+    #function to post a message, checks for length of message
     json = request.get_json()
     if "token" in json and "message" in json and "email" in json:
         if json['token']==tokenDic['token'] and len(json['message']) < 150:
@@ -98,6 +103,7 @@ def post_message():
 
 @app.route('/user/getuserdatabytoken', methods = ['GET'])
 def get_user_data_by_token():
+    #gets user message
     json = request.headers.get("token")
     print(json)
     if json==tokenDic['token']:
@@ -105,7 +111,7 @@ def get_user_data_by_token():
         if rows != False:
             result = []
             for row in rows:
-                result.append({"email": row[0], "firstname" : row[1], "lastname" : row[2], "gender" : row[3], "city" : row[4], "country" : row[5]})
+                result.append({"email": row[0], "firstname" : row[2], "familyname" : row[3], "gender" : row[4], "city" : row[5], "country" : row[6]})
             return jsonify(result), 200
         else: #The server could not find the ressource
             return "{}", 404
@@ -122,7 +128,7 @@ def get_user_data_by_email():
         if rows != False:
             result = []
             for row in rows:
-                result.append({"email": row[0], "firstname" : row[1], "lastname" : row[2], "gender" : row[3], "city" : row[4], "country" : row[5]})
+                result.append({"email": row[0], "firstname" : row[2], "familyname" : row[3], "gender" : row[4], "city" : row[5], "country" : row[6]})
             return jsonify(result), 200
         else: #The server could not find the ressource
             return "{}", 404
@@ -151,7 +157,7 @@ def get_user_messages_by_email():
         result = database_helper.retrieve_messages_email(jsonToken, jsonEmail['email'])
         if result != False:
             return jsonify({"result" : result}), 200
-        else: #The server could not find the ressources 
+        else: #The server could not find the ressources
             return "{}", 404
     else: #Bad request : the user made a mistake or did not respect the requirements
         return "{}", 400

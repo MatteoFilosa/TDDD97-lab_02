@@ -36,7 +36,7 @@ def create_user(email, password, firstname, familyname, gender, city, country):
         get_db().commit()
         return True
     except:  #FIX Exception
-        
+
         return False
 
 
@@ -82,7 +82,7 @@ def message_help(token, message, email):
 def retrieve_data_token(token):
 
     email = token_to_email(token)
-    cursor = get_db().execute("select email, firstname, firstname, gender, city, country from user where user.email = ?", [email])
+    cursor = get_db().execute("select * from user where user.email = ?", [email])
     rows = cursor.fetchall()
     cursor.close()
     print(rows)
@@ -93,7 +93,7 @@ def retrieve_data_token(token):
 
 def retrieve_data_email(token, email):
 
-    cursor = get_db().execute("select email, firstname, firstname, gender, city, country from user where user.email = ?", [email])
+    cursor = get_db().execute("select * from user where user.email = ?", [email])
     rows = cursor.fetchall()
     cursor.close()
     print(rows)
