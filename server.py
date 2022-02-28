@@ -74,7 +74,7 @@ def change_password():
     jsonToken = request.headers.get("token")
     json = request.get_json()
     if "password" in json and "newpassword" in json:
-        if jsonToken==tokenDic['token'] and and len(json['password']) < 30 and len(json['newpassword']) < 30:
+        if jsonToken==tokenDic['token'] and len(json['password']) < 30 and len(json['newpassword']) < 30:
             result = database_helper.new_password(jsonToken, json['password'], json['newpassword'])
             if result == True: #New password created
                 return "{}", 201
