@@ -71,10 +71,11 @@ def sign_out():
 @app.route('/user/changepassword', methods = ['PUT'])
 #function to change the password
 def change_password():
+    jsonToken = request.headers.get("token")
     json = request.get_json()
-    if "token" in json and "password" in json and "newpassword" in json:
-        if len(json['token'])< 30 and len(json['password']) < 30 and len(json['newpassword']) < 30:
-            result = database_helper.new_password(tokenDic['token'], json['password'], json['newpassword'])
+    if "password" in json and "newpassword" in json:
+        if jsonToken==tokenDic['token'] and and len(json['password']) < 30 and len(json['newpassword']) < 30:
+            result = database_helper.new_password(jsonToken, json['password'], json['newpassword'])
             if result == True: #New password created
                 return "{}", 201
             else: #The server could not update the password
@@ -88,10 +89,11 @@ def change_password():
 @app.route('/user/postmessage', methods = ['PUT'])
 def post_message():
     #function to post a message, checks for length of message
+    jsonToken = request.headers.get("token")
     json = request.get_json()
-    if "token" in json and "message" in json and "email" in json:
-        if json['token']==tokenDic['token'] and len(json['message']) < 150:
-            result = database_helper.message_help(json['token'], json['message'], json['email'])
+    if "message" in json and "email" in json:
+        if jsonToken==tokenDic['token'] and len(json['message']) < 150:
+            result = database_helper.message_help(jsonToken, json['message'], json['email'])
             if result == True:
                 return "{}", 201
             else:#The server could not post the message
