@@ -38,7 +38,7 @@ def sign_in():
     json = request.get_json()
     if "email" in json and "password" in json:
         if len(json['email']) < 30 and len(json['password']) < 30:
-            result = database_helper.find_user(json['email'], json['password'])
+            result = database_helper.get_password(json['email'], json['password'])
             if result == True: # User found
                 token = binascii.hexlify(os.urandom(20)).decode()
                 tokenDic["token"] = token
@@ -47,7 +47,7 @@ def sign_in():
                 database_helper.send_token(token)
                 #jsonify token
                 return jsonify({"token" : token}), 200
-            else:  #The user was not founf in the database
+            else:  #The user was not found in the database
                 return "{}", 404
         else: #Bad request : the user entered invalid infos
             return "{}", 400
@@ -121,12 +121,11 @@ def get_user_data_by_token():
         return "{}", 404
 
 
-@app.route('/user/getuserdatabyemail', methods = ['GET'])
-def get_user_data_by_email():
+@app.route('/user/getuserdatabyemail/<email>', methods = ['GET'])
+def get_user_data_by_email(email):
     jsonToken = request.headers.get("token")
-    jsonEmail = request.get_json()
-    if jsonToken==tokenDic['token'] and "email" in jsonEmail and len(jsonEmail) < 30:
-        rows = database_helper.retrieve_data_email(jsonToken, jsonEmail['email'])
+    if jsonToken==tokenDic['token'] and "email" != None and len(email) < 30:
+        rows = database_helper.retrieve_data_email(jsonToken, email)
         if rows != False:
             result = []
             for row in rows:
@@ -151,12 +150,11 @@ def get_user_messages_by_token():
         return "{}", 400
 
 
-@app.route('/user/getusermessagesbyemail', methods = ['GET'])
-def get_user_messages_by_email():
+@app.route('/user/getusermessagesbyemail/<email>', methods = ['GET'])
+def get_user_messages_by_email(email):
     jsonToken = request.headers.get("token")
-    jsonEmail = request.get_json()
-    if jsonToken==tokenDic['token'] and "email" in jsonEmail and len(jsonEmail) < 30:
-        result = database_helper.retrieve_messages_email(jsonToken, jsonEmail['email'])
+    if jsonToken==tokenDic['token'] and "email" != None and len(email) < 30:
+        result = database_helper.retrieve_messages_email(jsonToken, email)
         if result != False:
             return jsonify({"result" : result}), 200
         else: #The server could not find the ressources

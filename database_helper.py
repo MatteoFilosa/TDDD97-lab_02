@@ -41,7 +41,7 @@ def create_user(email, password, firstname, familyname, gender, city, country):
 
 
 
-def find_user(email, password):
+def get_password(email, password):
 
     loggedInUser["email"] = email
     cursor = get_db().execute("select * from user where user.email = ? and password = ?", [email, password])
@@ -72,12 +72,17 @@ def message_help(token, message, email):
     rows = cursor.fetchall()
     cursor.close()
     if rows: #user exists
-        get_db().execute("insert into messages values(?, ?)", [message, email])
-        get_db().commit()
-        print(message)
-        return True
+        insert_message(message, email)
     else:
         return False
+
+def insert_message(message, email):
+
+    get_db().execute("insert into messages values(?, ?)", [message, email])
+    get_db().commit()
+    print(message)
+    return True
+
 
 def retrieve_data_token(token):
 
